@@ -6,10 +6,60 @@ from rest_framework import generics, parsers, viewsets, permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework_simplejwt.tokens import RefreshToken
 import requests
 from rest_framework_simplejwt.authentication import JWTAuthentication
+import qrcode
+import base64
+from io import BytesIO
+from django.core.mail import EmailMultiAlternatives
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.http import JsonResponse
+from django.core.files.base import ContentFile
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def send_qr_email(request):
+    user = request.user
+    user_email = user.email
+
+    qr_data = f"https://yourwebsite.com/ticket/{user.id}-{user.username}"
+    qr = qrcode.make(qr_data)
+
+    buffer = BytesIO()
+    qr.save(buffer, format='PNG')
+    qr_content = buffer.getvalue()
+    qr_base64 = base64.b64encode(qr_content).decode()
+
+    html_content = f"""
+    <html>
+        <body>
+            <h2>Hello {user.username} 👋</h2>
+            <p>Your QR code is attached to this email.</p>
+            <p>Visit: <a href="{qr_data}">{qr_data}</a></p>
+        </body>
+    </html>
+    """
+
+    email = EmailMultiAlternatives(
+        subject="Your Personalized QR Code",
+        body="Please find your QR code attached.",
+        from_email="katerinacb99@gmail.com",
+        to=[user_email]
+    )
+    email.attach("qr_code.png", qr_content, "image/png")
+
+    email.send()
+
+    return Response({
+        'message': 'Email sent to your address successfully!',
+        'qr_base64': qr_base64 
+    })
+
+
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -18,17 +68,14 @@ def google_login(request):
     from pprint import pprint
 
     token = request.data.get("access_token")
-    print("Received token:", token)
 
     if not token:
         return Response({"error": "No token provided"}, status=400)
 
     google_verify_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
     google_response = requests.get(google_verify_url)
-    print("Google response status:", google_response.status_code)
 
     if google_response.status_code != 200:
-        print("Google token verification failed.")
         return Response({"error": "Invalid Google token"}, status=400)
 
     google_data = google_response.json()

@@ -16,6 +16,8 @@ const ReservationForm = () => {
     const [availableSpots, setAvailableSpots] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+    const [qrImage, setQrImage] = useState(null);
+
 
     const { token } = useAuth(); 
 
@@ -43,7 +45,6 @@ const ReservationForm = () => {
         e.preventDefault();
         setIsSubmitting(true);
     
-    
         const latestToken = localStorage.getItem("ACCESS_TOKEN");
     
         if (!latestToken) {
@@ -51,46 +52,58 @@ const ReservationForm = () => {
             navigate("/login");
             return;
         }
-
+    
         if (!date) {
             setError("Please select a date.");
+            setIsSubmitting(false);
             return;
         }
-
+    
         if (numTickets > availableSpots) {
             setError("Not enough available spots.");
+            setIsSubmitting(false);
             return;
         }
     
         const reservationData = {
-            museum: museumId,  
+            museum: museumId,
             date: date,
             num_tickets: numTickets,
         };
     
         try {
-            const response = await api.post(
-                "/api/reservations/",
-                reservationData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${latestToken}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+            const response = await api.post("/api/reservations/", reservationData, {
+                headers: {
+                    Authorization: `Bearer ${latestToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
     
             console.log("Reservation created:", response.data);
-            alert("Reservation successful!");
-            navigate("/");
     
+            // 🔥 Send QR Code Email
+            const qrResponse = await api.get("/send-qr-email/", {
+                headers: {
+                    Authorization: `Bearer ${latestToken}`,
+                },
+            });
+
+            // Save the QR code to state for display
+            if (qrResponse.data.qr_base64) {
+                setQrImage(`data:image/png;base64,${qrResponse.data.qr_base64}`);
+            }
+
+    
+            alert("Reservation successful! A QR code has been sent to your email.");
+            // navigate("/");
         } catch (error) {
             console.error("Error creating reservation:", error);
-            setMessage(error.response?.data?.message || "Failed to create reservation.");
+            setError(error.response?.data?.message || "Failed to create reservation.");
         } finally {
             setIsSubmitting(false);
         }
     };
+    
     
 
     return (
@@ -108,10 +121,14 @@ const ReservationForm = () => {
                 <form className="reservation-form" onSubmit={handleSubmit}>
                     <label>Reservation Date:</label>
                     <DatePicker
-                        selected={date}
-                        onChange={(date) => setDate(date)}
+                        selected={date ? new Date(date) : null} 
+                        onChange={(dateObj) => {
+                            const formatted = dateObj.toISOString().split("T")[0];
+                            setDate(formatted);
+                        }}
                         inline
                     />
+
 
 
 
@@ -129,6 +146,15 @@ const ReservationForm = () => {
                     <button className="reservation-button" type="submit" disabled={isSubmitting}>
                         {isSubmitting ? "Reserving..." : "Reserve"}
                     </button>
+                    {qrImage && (
+                        <div className="qr-code-section">
+                            <h3>Your Reservation QR Code:</h3>
+                            <img src={qrImage} alt="QR Code" className="qr-image" />
+                            <p>You will also receive this QR code by email.</p>
+                            <p>Please show it at the entrance upon arrival. We look forward to seeing you!</p>
+                        </div>
+                    )}
+
                 </form>
             </div>
         </div>

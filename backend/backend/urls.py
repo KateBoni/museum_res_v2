@@ -2,9 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import CreateUserView, google_login
+from api.views import CreateUserView, google_login, send_qr_email
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,4 +17,5 @@ urlpatterns = [
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path('auth/social/', include('allauth.socialaccount.urls')),
+    path('send-qr-email/', send_qr_email, name='send_qr_email'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

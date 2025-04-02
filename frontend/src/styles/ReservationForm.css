@@ -7,7 +7,7 @@
 
 .reservation-form select,
 .reservation-form input {
-    width: 100%;
+    width: 50%;
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -26,6 +26,7 @@
     font-size: 16px;
     transition: background-color 0.3s ease;
     text-align: center;
+    margin: 15px;
 }
 
 .success-message {
@@ -38,12 +39,13 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 30px;
-    padding: 20px;
+    padding: 40px;
 }
 
 .museum-details {
     flex: 1;
     max-width: 60%;
+    font-weight: 400;
 }
 
 .museum-photo {
@@ -55,23 +57,14 @@
 
 .reservation-form-section {
     flex: 1;
-    max-width: 20%;
-    padding-right: 200px;
+    max-width: 30%;
+    padding-right: 100px;
 }
 
 .reservation-form label {
     display: block;
     font-weight: bold;
-    margin-top: 10px;
-}
-
-.reservation-button {
-    margin-top: 15px;
-    padding: 10px 15px;
-    background-color: var(--button-color);
-    color: white;
-    border: none;
-    cursor: pointer;
+    margin: 10px;
 }
 
 .reservation-button:disabled {
@@ -92,3 +85,12 @@ background-color: var(--button-color);
 color: white;
 } */
   
+.qr-code-section {
+    margin-top: 2rem;
+    text-align: left;
+}
+.qr-image {
+    width: 200px;
+    height: 200px;
+    margin-top: 1rem;
+}

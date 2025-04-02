@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Home.css';
+import UpcomingExhibitionsCarousel from '../components/UpcomingExhibitionsCarousel';
+
 
 const Home = () => {
 
@@ -17,18 +19,24 @@ const Home = () => {
             </div>
 
             <div className="home-container">
-                <div className="featured-museums">
-                    <h2>Upcoming Exhibitions</h2>
-                    <p>Stay updated on the latest events and exhibitions in Greece’s finest museums.</p>
-                </div>
+                    <div className="featured-museums">
+                        <h2>Upcoming Exhibitions</h2>
+                        <p>Stay updated on the latest events and exhibitions in Greece’s finest museums.</p>
+
+                        <UpcomingExhibitionsCarousel /> {/* Add this line here */}
+                    </div>
+
 
                 <div className="about-forum-container">
                     <div className="about-content">
                         <h2>About Us</h2>
                         <p>
-                            Our mission is to connect you with the rich cultural heritage of Greece. 
-                            From historical landmarks to modern art galleries, we make it easy to explore and 
-                            reserve your museum visits.
+                        Our mission is to connect you with the rich cultural heritage of Greece. 
+                        From historical landmarks to modern art galleries, we make it easy to explore and 
+                        reserve your museum visits. 
+
+                        Whether you're a history enthusiast, an art lover, or simply curious about the treasures of the past, 
+                        Artivista offers a seamless and inspiring way to experience Greece's cultural legacy. 
                         </p>
                     </div>
 

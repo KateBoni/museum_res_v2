@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import CreateUserView, google_login, send_qr_email
+from api.views import CreateUserView, GoogleLoginView, send_qr_email
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -13,7 +13,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path('accounts/', include("allauth.urls")),
     path("api/", include("api.urls")),
-    path("api/auth/social/google/", google_login),  
+    path("api/auth/social/google/", GoogleLoginView.as_view(), name="google-login"),  
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path('auth/social/', include('allauth.socialaccount.urls')),

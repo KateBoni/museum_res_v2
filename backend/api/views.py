@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.contrib.auth import login
 from .models import Museum, Reservation
 from .serializers import UserSerializer, MuseumSerializer, ReservationSerializer
 from rest_framework import generics, parsers, viewsets, permissions
@@ -19,6 +20,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.core.files.base import ContentFile
+from rest_framework.views import APIView
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -60,56 +63,52 @@ def send_qr_email(request):
     })
 
 
+# User = get_user_model()
 
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def google_login(request):
-    from django.contrib.auth import login
-    from pprint import pprint
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
 
-    token = request.data.get("access_token")
+    def post(self, request):
+        token = request.data.get("access_token")
 
-    if not token:
-        return Response({"error": "No token provided"}, status=400)
+        if not token:
+            return Response({"error": "No token provided"}, status=400)
 
-    google_verify_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
-    google_response = requests.get(google_verify_url)
+        google_verify_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
+        google_response = requests.get(google_verify_url)
 
-    if google_response.status_code != 200:
-        return Response({"error": "Invalid Google token"}, status=400)
+        if google_response.status_code != 200:
+            return Response({"error": "Invalid Google token"}, status=400)
 
-    google_data = google_response.json()
-    pprint(google_data)
+        google_data = google_response.json()
 
-    email = google_data.get("email")
-    first_name = google_data.get("given_name", "")
-    last_name = google_data.get("family_name", "")
+        email = google_data.get("email")
+        first_name = google_data.get("given_name", "")
+        last_name = google_data.get("family_name", "")
 
-    if not email:
-        return Response({"error": "Google did not provide an email"}, status=400)
+        if not email:
+            return Response({"error": "Google did not provide an email"}, status=400)
 
-    user = User.objects.filter(email=email).first()
+        user, created = User.objects.get_or_create(email=email, defaults={
+            "username": email.split("@")[0],
+            "first_name": first_name,
+            "last_name": last_name,
+        })
 
-    if not user:
-        username = email.split("@")[0]
-        user = User.objects.create(
-            username=username,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            password=""  # Could use set_unusable_password() too
-        )
+        if created:
+            user.set_unusable_password()
+            user.save()
 
-    user.backend = 'django.contrib.auth.backends.ModelBackend'
-    login(request, user)
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, user)
 
-    refresh = RefreshToken.for_user(user)
+        refresh = RefreshToken.for_user(user)
 
-    return Response({
-        "access_token": str(refresh.access_token),
-        "refresh_token": str(refresh),
-        "message": "Google login successful!",
-    })
+        return Response({
+            "access_token": str(refresh.access_token),
+            "refresh_token": str(refresh),
+            "message": "Google login successful!",
+        })
 
 
 # Create your views here.

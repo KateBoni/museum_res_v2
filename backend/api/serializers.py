@@ -7,8 +7,9 @@ from django.utils import timezone
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "password"]
-        extra_kwards = {"password": {"write_only": True}}
+        fields = ["id", "username", "email", "password"]
+        extra_kwards = {"password": {"write_only": True},
+                        "email": {"required": True}}
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)

@@ -6,6 +6,8 @@ import api from "../api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styles/react-datepicker-overrides.css";
+import { jwtDecode } from "jwt-decode";
+
 
 const ReservationForm = () => {
     const location = useLocation();
@@ -17,8 +19,7 @@ const ReservationForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [qrImage, setQrImage] = useState(null);
-
-
+    const [currentUser, setCurrentUser] = useState(null);
     const { token } = useAuth(); 
 
     useEffect(() => {
@@ -26,6 +27,18 @@ const ReservationForm = () => {
             fetchAvailableSpots();
         }
     }, [date]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("ACCESS_TOKEN");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setCurrentUser(decoded.username || decoded.email || "Unknown");
+            } catch (err) {
+                console.error("Failed to decode token:", err);
+            }
+        }
+    }, []);    
 
 
     const fetchAvailableSpots = async () => {
@@ -108,6 +121,10 @@ const ReservationForm = () => {
 
     return (
         <div className="reservation-page">
+            {currentUser && (
+                <p><strong>Logged in as:</strong> {currentUser}</p>
+            )}
+
             <div className="museum-details">
                 <img src={museumPhoto || "https://via.placeholder.com/500x300"} alt={museumName} className="museum-photo" />
                 <h2>{museumName}</h2>

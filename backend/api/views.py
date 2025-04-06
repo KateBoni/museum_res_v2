@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from django.contrib.auth import login
 from .models import Museum, Reservation
 from .serializers import UserSerializer, MuseumSerializer, ReservationSerializer
 from rest_framework import generics, parsers, viewsets, permissions
@@ -63,7 +62,56 @@ def send_qr_email(request):
     })
 
 
-# User = get_user_model()
+
+# @api_view(["POST"])
+# @permission_classes([AllowAny])
+# def google_login(request):
+#     from django.contrib.auth import login
+#     from pprint import pprint
+
+#     token = request.data.get("access_token")
+
+#     if not token:
+#         return Response({"error": "No token provided"}, status=400)
+
+#     google_verify_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
+#     google_response = requests.get(google_verify_url)
+
+#     if google_response.status_code != 200:
+#         return Response({"error": "Invalid Google token"}, status=400)
+
+#     google_data = google_response.json()
+#     pprint(google_data)
+
+#     email = google_data.get("email")
+#     first_name = google_data.get("given_name", "")
+#     last_name = google_data.get("family_name", "")
+
+#     if not email:
+#         return Response({"error": "Google did not provide an email"}, status=400)
+
+#     user = User.objects.filter(email=email).first()
+
+#     if not user:
+#         username = email.split("@")[0]
+#         user = User.objects.create(
+#             username=username,
+#             email=email,
+#             first_name=first_name,
+#             last_name=last_name,
+#             password=""  # Could use set_unusable_password() too
+#         )
+
+#     user.backend = 'django.contrib.auth.backends.ModelBackend'
+#     login(request, user)
+
+#     refresh = RefreshToken.for_user(user)
+
+#     return Response({
+#         "access_token": str(refresh.access_token),
+#         "refresh_token": str(refresh),
+#         "message": "Google login successful!",
+#     })
 
 class GoogleLoginView(APIView):
     permission_classes = [AllowAny]
@@ -100,7 +148,7 @@ class GoogleLoginView(APIView):
             user.save()
 
         user.backend = 'django.contrib.auth.backends.ModelBackend'
-        login(request, user)
+        # login(request, user)
 
         refresh = RefreshToken.for_user(user)
 

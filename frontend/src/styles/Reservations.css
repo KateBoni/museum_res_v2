@@ -6,9 +6,9 @@
 
 .reservation-item {
     display: grid;
-    grid-template-columns: 2fr 1fr 0.5fr 0.5fr; /* Adjust column sizes */
-    align-items: center; /* Align items vertically */
-    gap: 10px; /* Add space between columns */
+    grid-template-columns: 2fr 1fr 0.5fr 0.5fr; 
+    align-items: center;
+    gap: 10px;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;

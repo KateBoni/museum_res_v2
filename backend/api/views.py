@@ -36,19 +36,9 @@ def send_qr_email(request):
     qr_content = buffer.getvalue()
     qr_base64 = base64.b64encode(qr_content).decode()
 
-    html_content = f"""
-    <html>
-        <body>
-            <h2>Hello {user.username} 👋</h2>
-            <p>Your QR code is attached to this email.</p>
-            <p>Visit: <a href="{qr_data}">{qr_data}</a></p>
-        </body>
-    </html>
-    """
-
     email = EmailMultiAlternatives(
-        subject="Your Personalized QR Code",
-        body="Please find your QR code attached.",
+        subject="Reservation Confirmation",
+        body="Hello,\n\nThank you for your reservation!\nPlease present the QR code below at the museum entrance to check in.\nWe look forward to welcoming you!\n\nBest regards,\n\nMyMuseum Team",
         from_email="katerinacb99@gmail.com",
         to=[user_email]
     )
@@ -61,57 +51,6 @@ def send_qr_email(request):
         'qr_base64': qr_base64 
     })
 
-
-
-# @api_view(["POST"])
-# @permission_classes([AllowAny])
-# def google_login(request):
-#     from django.contrib.auth import login
-#     from pprint import pprint
-
-#     token = request.data.get("access_token")
-
-#     if not token:
-#         return Response({"error": "No token provided"}, status=400)
-
-#     google_verify_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
-#     google_response = requests.get(google_verify_url)
-
-#     if google_response.status_code != 200:
-#         return Response({"error": "Invalid Google token"}, status=400)
-
-#     google_data = google_response.json()
-#     pprint(google_data)
-
-#     email = google_data.get("email")
-#     first_name = google_data.get("given_name", "")
-#     last_name = google_data.get("family_name", "")
-
-#     if not email:
-#         return Response({"error": "Google did not provide an email"}, status=400)
-
-#     user = User.objects.filter(email=email).first()
-
-#     if not user:
-#         username = email.split("@")[0]
-#         user = User.objects.create(
-#             username=username,
-#             email=email,
-#             first_name=first_name,
-#             last_name=last_name,
-#             password=""  # Could use set_unusable_password() too
-#         )
-
-#     user.backend = 'django.contrib.auth.backends.ModelBackend'
-#     login(request, user)
-
-#     refresh = RefreshToken.for_user(user)
-
-#     return Response({
-#         "access_token": str(refresh.access_token),
-#         "refresh_token": str(refresh),
-#         "message": "Google login successful!",
-#     })
 
 class GoogleLoginView(APIView):
     permission_classes = [AllowAny]

@@ -38,8 +38,9 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 30px;
+    /* gap: 30px; */
     padding: 40px;
+    padding-left: 150px;
 }
 
 .museum-details {
@@ -71,19 +72,7 @@
     background-color: gray;
     cursor: not-allowed;
 }
-/* 
-.react-datepicker {
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    margin-top: 10px;
-    color: #757575
-}
-  
-.react-datepicker__day--selected {
-background-color: var(--button-color);
-color: white;
-} */
+
   
 .qr-code-section {
     margin-top: 2rem;

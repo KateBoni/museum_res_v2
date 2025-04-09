@@ -5,24 +5,23 @@ import { useAuth } from "../components/AuthContext";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn } = useAuth(); // ✅ Get auth state
+  const { isLoggedIn, setIsLoggedIn } = useAuth(); 
 
   const handleLogout = () => {
     console.log("Logging out...");
-    localStorage.removeItem("ACCESS_TOKEN"); // ✅ Remove token
-    setIsLoggedIn(false); // ✅ Update auth state
-    navigate("/login"); // ✅ Redirect to login page
-    setTimeout(() => window.location.reload(), 500); // ✅ Force refresh to clear reservations
+    localStorage.removeItem("ACCESS_TOKEN"); 
+    setIsLoggedIn(false); 
+    navigate("/login"); 
+    setTimeout(() => window.location.reload(), 500); 
   };
   
   return (
     <Navbar className="navbar" fluid>
       <div className="navbar-container">
         <div className="navbar-logo">
-          <Link to="/">Artivista</Link>
+          <Link to="/">MyMuseum</Link>
         </div>
 
-        {/* NAV LINKS */}
         <Navbar.Collapse>
           <ul className="navbar-links">
             <li>

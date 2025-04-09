@@ -19,8 +19,7 @@ const GoogleLoginButton = () => {
           });
       
           console.log("Login success:", res.data);
-      
-          // ✅ Add this part to update frontend state
+
           localStorage.setItem("ACCESS_TOKEN", res.data.access_token);
           localStorage.setItem("REFRESH_TOKEN", res.data.refresh_token);
           setToken(res.data.access_token);

@@ -7,19 +7,12 @@ function LogoutButton() {
     const { setIsLoggedIn, setToken } = useAuth();
 
     const handleLogout = () => {
-        // ✅ Step 1: Fully clear stored authentication data
         localStorage.removeItem("ACCESS_TOKEN");
         localStorage.removeItem("REFRESH_TOKEN");
         sessionStorage.clear();
-
-        // ✅ Step 2: Reset React state
         setIsLoggedIn(false);
         setToken(null);
-
-        // ✅ Step 3: Ensure Google logout happens correctly
         googleLogout();
-
-        // ✅ Step 4: Force a full reload to prevent old session data
         window.location.href = "/login"; 
     };
 

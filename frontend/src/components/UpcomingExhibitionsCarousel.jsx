@@ -7,7 +7,7 @@ const exhibitions = [
   {
     title: "Ancient Treasures of Athens",
     date: "April 20 - June 15",
-    image: ancientImg, // ✅ correct
+    image: ancientImg, 
   },
   {
     title: "Modern Greek Art & Culture",

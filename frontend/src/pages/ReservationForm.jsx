@@ -94,14 +94,12 @@ const ReservationForm = () => {
     
             console.log("Reservation created:", response.data);
     
-            // 🔥 Send QR Code Email
             const qrResponse = await api.get("/send-qr-email/", {
                 headers: {
                     Authorization: `Bearer ${latestToken}`,
                 },
             });
 
-            // Save the QR code to state for display
             if (qrResponse.data.qr_base64) {
                 setQrImage(`data:image/png;base64,${qrResponse.data.qr_base64}`);
             }
@@ -121,10 +119,6 @@ const ReservationForm = () => {
 
     return (
         <div className="reservation-page">
-            {currentUser && (
-                <p><strong>Logged in as:</strong> {currentUser}</p>
-            )}
-
             <div className="museum-details">
                 <img src={museumPhoto || "https://via.placeholder.com/500x300"} alt={museumName} className="museum-photo" />
                 <h2>{museumName}</h2>

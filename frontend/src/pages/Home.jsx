@@ -23,7 +23,7 @@ const Home = () => {
                         <h2>Upcoming Exhibitions</h2>
                         <p>Stay updated on the latest events and exhibitions in Greece’s finest museums.</p>
 
-                        <UpcomingExhibitionsCarousel /> {/* Add this line here */}
+                        <UpcomingExhibitionsCarousel /> 
                     </div>
 
 

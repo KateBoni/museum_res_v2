@@ -10,7 +10,7 @@ import Register from "./pages/Register"
 import { AuthProvider } from "./components/AuthContext";
 import ReservationForm from "./pages/ReservationForm";
 import Logout from "./pages/Logout";
-import Reservations from "./pages/reservations";
+import Reservations from "./pages/Reservations";
 
 const GOOGLE_CLIENT_ID = "308846004892-7h9dparc83ccjqsld19a3s9t9e2jprg1.apps.googleusercontent.com"
 

@@ -9,32 +9,24 @@ export const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const storedToken = localStorage.getItem("ACCESS_TOKEN");
-      setIsLoggedIn(!!storedToken);
-      setToken(storedToken);
-
-      if (storedToken) {
-        try {
-          const decoded = jwtDecode(storedToken);
-          console.log("🔍 Decoded Token:", decoded);
-          setIsAdmin(decoded?.is_staff || false); 
-        } catch (err) {
-          console.error("Error decoding token:", err);
-          setIsAdmin(false);
-        }
-      } else {
+    const storedToken = localStorage.getItem("ACCESS_TOKEN");
+    setIsLoggedIn(!!storedToken);
+    setToken(storedToken);
+  
+    if (storedToken) {
+      try {
+        const decoded = jwtDecode(storedToken);
+        console.log("🔍 Decoded Token:", decoded);
+        setIsAdmin(decoded?.is_staff || false);
+      } catch (err) {
+        console.error("Error decoding token:", err);
         setIsAdmin(false);
       }
-    };
-
-    window.addEventListener("storage", checkAuth);
-    checkAuth();
-
-    return () => {
-      window.removeEventListener("storage", checkAuth);
-    };
-  }, []);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [token]);
+  
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, token, setToken, isAdmin }}>

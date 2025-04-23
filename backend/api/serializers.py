@@ -53,7 +53,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         date = data.get("date")
 
         if museum and date:
-            if ClosedDate.objects.filter(museum=museum, date=date).exists():
+            if ClosedDate.objects.filter(museum=museum, date_from__lte=date, date_to__gte=date).exists():
                 raise serializers.ValidationError("The museum is closed on the selected date.")
 
         return data

@@ -5,7 +5,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/admin/ManageReservations.css";
 
-
 const ManageReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [museums, setMuseums] = useState([]);
@@ -21,17 +20,15 @@ const ManageReservations = () => {
       if (filters.museum) params.append("museum", filters.museum);
       if (filters.dateFrom) params.append("date_from", filters.dateFrom);
       if (filters.dateTo) params.append("date_to", filters.dateTo);
-  
+
       const res = await api.get(`/api/reservations/?${params.toString()}`, {
         headers: { Authorization: `Bearer ${customToken}` },
       });
       setReservations(res.data);
-      console.log("🎯 Reservations fetched:", res.data);
     } catch (err) {
       console.error("Failed to fetch reservations", err);
     }
   };
-  
 
   const fetchMuseums = async () => {
     try {
@@ -55,13 +52,12 @@ const ManageReservations = () => {
       museum: selectedMuseum,
       dateFrom: dateFrom ? dateFrom.toISOString().split("T")[0] : null,
       dateTo: dateTo ? dateTo.toISOString().split("T")[0] : null,
-    });
+    }, latestToken);
     console.log("🔍 Filters applied:", {
-        museum: selectedMuseum,
-        dateFrom: dateFrom?.toISOString().split("T")[0],
-        dateTo: dateTo?.toISOString().split("T")[0],
-      });
-      
+      museum: selectedMuseum,
+      dateFrom: dateFrom?.toISOString().split("T")[0],
+      dateTo: dateTo?.toISOString().split("T")[0],
+    });
   };
 
   const [editingReservationId, setEditingReservationId] = useState(null);
@@ -73,16 +69,24 @@ const ManageReservations = () => {
   };
 
   const saveReservationEdit = async () => {
+    const payload = {
+      museum: editedReservation.museum,
+      date: editedReservation.date,
+      num_tickets: Number(editedReservation.num_tickets)
+    };
+  
+  
     try {
-      await api.put(`/api/reservations/${editingReservationId}/`, editedReservation, {
+      await api.put(`/api/reservations/${editingReservationId}/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEditingReservationId(null);
       handleSearch();
     } catch (err) {
-      console.error("Failed to update reservation", err);
+      console.error("❌ Failed to update reservation:", err.response?.data || err);
     }
   };
+  
 
   const deleteReservation = async (id) => {
     try {
@@ -125,25 +129,27 @@ const ManageReservations = () => {
         <button onClick={handleSearch}>Search</button>
       </div>
 
-      {selectedMuseum && (
-        <h2>
-            {" "}
-            {museums.find((m) => m.id.toString() === selectedMuseum)?.name}
-        </h2>
-        )}
-
-
       {reservations.length === 0 ? (
-        <p>No reservations found.</p>
+        <p style={{ color: "gray" }}>No reservations match your search criteria.</p>
       ) : (
         reservations.map((res) => (
-          <div key={res.id} className="museum-card">
+          <div key={`${res.id}-${res.date}`} className="museum-card">
             <p><strong>User ID:</strong> {res.user}</p>
             <p><strong>Username:</strong> {res.user_name}</p>
             <p><strong>Date:</strong> {res.date}</p>
 
             {editingReservationId === res.id ? (
               <>
+                <label>Date:</label>
+                <DatePicker
+                  selected={new Date(editedReservation.date)}
+                  onChange={(date) =>
+                    setEditedReservation({
+                      ...editedReservation,
+                      date: date.toISOString().split("T")[0],
+                    })
+                  }
+                />
                 <label>Tickets:</label>
                 <input
                   type="number"
@@ -152,6 +158,7 @@ const ManageReservations = () => {
                     setEditedReservation({ ...editedReservation, num_tickets: e.target.value })
                   }
                 />
+                
                 <button onClick={saveReservationEdit}>Save</button>
                 <button onClick={() => setEditingReservationId(null)}>Cancel</button>
               </>

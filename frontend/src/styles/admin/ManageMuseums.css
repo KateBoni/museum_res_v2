@@ -1,0 +1,90 @@
+.admin-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-container h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .museum-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .museum-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+  
+  .museum-card input,
+  .museum-card select,
+  .museum-card textarea {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    background-color: #fff;
+  }
+  
+  .museum-card button {
+    margin-right: 0.5rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--button-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .museum-card button:hover {
+    background-color: var(--button-color);
+  }
+  
+  .museum-card .delete-button, .cancel-button {
+    background-color: #e74c3c;
+  }
+  
+  .museum-card .delete-button, .cancel-button  {
+    background-color: #c0392b;
+  }
+  
+  .museum-card .cancel-button {
+    background-color: #e74c3c;
+  }
+  
+  .museum-card .cancel-button  {
+    background-color: #c0392b;
+  }
+  .manage-museum-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .manage-museum-list-item {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    background-color: #f2f2f2;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    text-align: left;
+  }
+  

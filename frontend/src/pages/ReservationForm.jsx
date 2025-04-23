@@ -21,6 +21,17 @@ const ReservationForm = () => {
     const [qrImage, setQrImage] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const { token } = useAuth(); 
+    const [closedDates, setClosedDates] = useState([]);
+    const [closedDateRanges, setClosedDateRanges] = useState([]);
+
+    const formatDate = (dateStr) => {
+        return new Date(dateStr).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      };
+      
 
     useEffect(() => {
         if (date) {
@@ -40,6 +51,41 @@ const ReservationForm = () => {
         }
     }, []);    
 
+    useEffect(() => {
+        const expandRange = (start, end) => {
+            const result = [];
+            const current = new Date(start);
+            while (current <= end) {
+              result.push(new Date(current));
+              current.setDate(current.getDate() + 1);
+            }
+            return result;
+          };
+          
+          const fetchClosedDates = async () => {
+            try {
+              const res = await api.get(`/api/closed-dates/?museum=${museumId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+          
+              const allDates = res.data.flatMap(cd => {
+                const from = new Date(cd.date_from);
+                const to = new Date(cd.date_to);
+                return expandRange(from, to);
+              });
+          
+              setClosedDates(allDates);
+              setClosedDateRanges(res.data); // ✅ Store full ranges with reasons
+            } catch (err) {
+              console.error("Failed to fetch closed dates", err);
+            }
+          };                
+    
+        if (museumId) {
+            fetchClosedDates();
+        }
+    }, [museumId]);
+    
 
     const fetchAvailableSpots = async () => {
         try {
@@ -132,17 +178,29 @@ const ReservationForm = () => {
                 <form className="reservation-form" onSubmit={handleSubmit}>
                     <label>Reservation Date:</label>
                     <DatePicker
-                        selected={date ? new Date(date) : null} 
+                        selected={date ? new Date(date) : null}
                         onChange={(dateObj) => {
                             const formatted = dateObj.toISOString().split("T")[0];
                             setDate(formatted);
                         }}
+                        excludeDates={closedDates}
                         inline
                     />
-
-
-
-
+               {closedDateRanges.length > 0 && (
+                    <div style={{ marginBottom: "1rem" }}>
+                        <p style={{ color: "gray", fontSize: "0.9rem", marginBottom: "0.5rem" }}>
+                        ⚠️ This museum will be closed on the following dates:
+                        </p>
+                        <ul style={{ fontSize: "0.9rem", paddingLeft: "1.5rem" }}>
+                        {closedDateRanges.map((cd) => (
+                            <li key={cd.id}>
+                            {formatDate(cd.date_from)} → {formatDate(cd.date_to)}{" "}
+                            {cd.reason && `– ${cd.reason}`}
+                            </li>
+                        ))}
+                        </ul>
+                    </div>
+                    )}
                     <label>Number of Tickets:</label>
                     <input
                         type="number"

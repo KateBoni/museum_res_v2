@@ -11,6 +11,13 @@ import { AuthProvider } from "./components/AuthContext";
 import ReservationForm from "./pages/ReservationForm";
 import Logout from "./pages/Logout";
 import Reservations from "./pages/Reservations";
+import AdminRoute from "./components/AdminRoute";
+import AdminPage from "./pages/admin/AdminPage";
+import ManageMuseums from "./pages/admin/ManageMuseums";
+import MuseumDashboard from "./pages/admin/MuseumDashboard";
+import ManageReservations from "./pages/admin/ManageReservations";
+// import ManageUsers from "./pages/admin/ManageUsers";
+
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
@@ -36,8 +43,33 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/register" element={<RegisterAndLogout />} />
-              </Routes>
-              
+                <Route path="/admin" element={
+                  <AdminRoute>
+                    <AdminPage />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/museums" element={
+                  <AdminRoute>
+                    <ManageMuseums />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/museums/:id" element={
+                  <AdminRoute>
+                    <MuseumDashboard />
+                  </AdminRoute>
+                } />
+
+                <Route path="/admin/reservations" element={
+                  <AdminRoute>
+                    <ManageReservations />
+                  </AdminRoute>
+                } />
+                {/* <Route path="/admin/users" element={
+                  <AdminRoute>
+                    <ManageUsers />
+                  </AdminRoute>
+                } /> */}
+              </Routes> 
         </BrowserRouter>
       </AuthProvider>
     </GoogleOAuthProvider>

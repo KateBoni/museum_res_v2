@@ -20,7 +20,16 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from django.core.files.base import ContentFile
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import MyTokenObtainPairSerializer
+from .models import ClosedDate
+from .serializers import ClosedDateSerializer
 
+
+class ClosedDateViewSet(viewsets.ModelViewSet):
+    queryset = ClosedDate.objects.all()
+    serializer_class = ClosedDateSerializer
+    permission_classes = [AllowAny]
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -133,8 +142,10 @@ class ReservationViewSet(viewsets.ModelViewSet):
         
         serializer.save(user=self.request.user)  # Αυτόματη συσχέτιση κράτησης με τον authenticated χρήστη
 
+    from datetime import datetime
+
     def get_queryset(self):
-        from datetime import date
+        from datetime import datetime
         jwt_authenticator = JWTAuthentication()
         response = jwt_authenticator.authenticate(self.request)
 
@@ -142,5 +153,29 @@ class ReservationViewSet(viewsets.ModelViewSet):
             user, _ = response
             self.request.user = user
 
-        reservations = Reservation.objects.filter(user=self.request.user).distinct()
-        return reservations
+        queryset = Reservation.objects.all() if self.request.user.is_staff else Reservation.objects.filter(user=self.request.user)
+
+        # Only staff users can apply filters
+        if self.request.user.is_staff:
+            museum_id = self.request.query_params.get("museum")
+            date_from = self.request.query_params.get("date_from")
+            date_to = self.request.query_params.get("date_to")
+
+            if museum_id:
+                queryset = queryset.filter(museum_id=museum_id)
+
+            if date_from:
+                queryset = queryset.filter(date__gte=date_from)
+
+            if date_to:
+                queryset = queryset.filter(date__lte=date_to)
+
+        return queryset.distinct()
+
+
+        # reservations = Reservation.objects.filter(user=self.request.user).distinct()
+        # return reservations
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

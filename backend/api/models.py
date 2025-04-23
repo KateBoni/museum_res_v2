@@ -47,3 +47,14 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.museum.name} ({self.date})"
+    
+
+
+class ClosedDate(models.Model):
+    museum = models.ForeignKey(Museum, on_delete=models.CASCADE, related_name="closed_dates")
+    date_from = models.DateField()
+    date_to = models.DateField()
+    reason = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"{self.museum.name} closed from {self.date_from} to {self.date_to}"

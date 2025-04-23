@@ -5,7 +5,7 @@ import { useAuth } from "../components/AuthContext";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn } = useAuth(); 
+  const { isLoggedIn, setIsLoggedIn, isAdmin  } = useAuth(); 
 
   const handleLogout = () => {
     console.log("Logging out...");
@@ -30,6 +30,11 @@ const NavBar = () => {
             <li>
               <Link to="/my-reservations">My Reservations</Link>
             </li>
+            {isLoggedIn && isAdmin && (
+              <li>
+                <Link to="/admin">Admin Panel</Link>
+              </li>
+            )}
             {isLoggedIn ? (
               <li>
                 <button className="logout-button" onClick={handleLogout}>

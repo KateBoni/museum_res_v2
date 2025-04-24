@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import { useAuth } from "../components/AuthContext"; 
+import QRCode from "react-qr-code";
 import "../styles/Reservations.css";
 
 const Reservations = () => {
@@ -60,7 +61,17 @@ const Reservations = () => {
             <li key={reservation.id} className={`reservation-item ${reservation.is_expired ? 'expired' : ''}`}>
               <strong>🏛️ {getMuseumName(reservation.museum)}</strong>
               <p>🎟️ Tickets: {reservation.num_tickets}</p>
-              <p>📅 Return Date: {reservation.date}</p>
+              <p>📅 Reservation Date: {reservation.date}</p>
+                <div className="qr-wrapper">
+                <QRCode
+                  value={`http://localhost:5173/admin/check-in/${reservation.id}`}
+                  size={128}
+                />
+                  <p style={{ fontSize: "0.8rem", marginTop: "0.5rem" }}>
+                    Show this code at museum check-in
+                  </p>
+                </div>
+
             </li>
           ))}
         </ul>

@@ -24,16 +24,16 @@ const NavBar = () => {
 
         <Navbar.Collapse>
           <ul className="navbar-links">
-            <li>
-              <Link to="/browse-museums">Browse Museums</Link>
-            </li>
-            <li>
-              <Link to="/my-reservations">My Reservations</Link>
-            </li>
-            {isLoggedIn && isAdmin && (
-              <li>
-                <Link to="/admin">Admin Panel</Link>
-              </li>
+            
+          {!isAdmin && (
+            <li><Link to="/browse-museums">Browse Museums</Link></li>
+          )}
+            {isLoggedIn && !isAdmin && (
+              <li><Link to="/my-reservations">My Reservations</Link></li>
+            )}
+
+            {isAdmin && (
+              <li><Link to="/admin">Admin Panel</Link></li>
             )}
             {isLoggedIn ? (
               <li>

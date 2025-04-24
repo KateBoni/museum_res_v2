@@ -144,12 +144,12 @@ class ReservationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        is_admin_view = self.request.query_params.get("admin") == "true"
 
-        if user.is_staff and is_admin_view:
+        if user.is_staff:
             queryset = Reservation.objects.all()
         else:
             queryset = Reservation.objects.filter(user=user)
+
 
         museum_id = self.request.query_params.get("museum")
         date_from = self.request.query_params.get("date_from")

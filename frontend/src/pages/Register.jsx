@@ -5,6 +5,8 @@ import "../styles/Form.css";
 
 function Register() {
   const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");  
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -13,7 +15,8 @@ function Register() {
     e.preventDefault();
 
     try {
-      const payload = { username, email, password };
+      const payload = { username, email, password, first_name: firstName,
+        last_name: lastName,};
       await api.post("/api/user/register/", payload);
       navigate("/login");
     } catch (error) {
@@ -33,6 +36,21 @@ function Register() {
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Username"
         required
+      />
+      <input
+        className="form-input"
+        type="text"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        placeholder="First Name"
+      />
+
+      <input
+        className="form-input"
+        type="text"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        placeholder="Last Name"
       />
 
       <input

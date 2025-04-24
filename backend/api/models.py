@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.utils.timezone import now
+# from django.utils.timezone import now
+from django.utils import timezone
 
 class Museum(models.Model):
     name = models.CharField(max_length=255)
@@ -39,11 +40,19 @@ class Reservation(models.Model):
     date = models.DateField()  # Ημερομηνία κράτησης
     num_tickets = models.PositiveIntegerField()  # Αριθμός εισιτηρίων
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')  # Κατάσταση κράτησης
+    checked_in = models.BooleanField(default=False)
+    checkin_time = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.museum.available_spots(self.date) < self.num_tickets:
             raise ValueError("Not enough available spots for this reservation.")
         super().save(*args, **kwargs)
+
+        
+    def check_in(self):
+        self.checked_in = True
+        self.checkin_time = timezone.now()
+        self.save()
 
     def __str__(self):
         return f"{self.user.username} - {self.museum.name} ({self.date})"

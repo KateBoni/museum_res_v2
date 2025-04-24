@@ -179,7 +179,7 @@ const MuseumDashboard = () => {
         {closedDates.map((cd) => (
           <li key={cd.id}>
             {cd.date_from} → {cd.date_to} {cd.reason && `– ${cd.reason}`}
-            <button onClick={() => deleteClosedDate(cd.id)}>❌</button>
+            <button className="delete-button" onClick={() => deleteClosedDate(cd.id)}>Delete</button>
           </li>
         ))}
       </ul>

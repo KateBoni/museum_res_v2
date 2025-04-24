@@ -1,0 +1,57 @@
+.admin-container {
+    padding: 2rem;
+  }
+  
+  .admin-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .user-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .user-card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-card p {
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+  }
+  
+  .user-card button {
+    margin-right: 0.6rem;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .user-card button:first-of-type {
+    background-color: var(--button-color);
+    color: white;
+  }
+  
+  .user-card button:first-of-type:hover {
+    background-color: var(--button-hover-color);
+  }
+  
+  .user-card button:last-of-type {
+    background-color: var(--delete-button-color);
+    color: white;
+  }
+  
+  .user-card button:last-of-type:hover {
+    background-color: var(--delete-button-color-hover);
+  }
+  

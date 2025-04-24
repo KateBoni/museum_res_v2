@@ -21,6 +21,7 @@ const ManageReservations = () => {
       if (filters.dateFrom) params.append("date_from", filters.dateFrom);
       if (filters.dateTo) params.append("date_to", filters.dateTo);
 
+      params.append("admin", "true"); 
       const res = await api.get(`/api/reservations/?${params.toString()}`, {
         headers: { Authorization: `Bearer ${customToken}` },
       });
@@ -83,7 +84,7 @@ const ManageReservations = () => {
       setEditingReservationId(null);
       handleSearch();
     } catch (err) {
-      console.error("❌ Failed to update reservation:", err.response?.data || err);
+      console.error("Failed to update reservation:", err.response?.data || err);
     }
   };
   
@@ -134,6 +135,7 @@ const ManageReservations = () => {
       ) : (
         reservations.map((res) => (
           <div key={`${res.id}-${res.date}`} className="museum-card">
+            <p><strong>Reservation ID:</strong> {res.id}</p>
             <p><strong>User ID:</strong> {res.user}</p>
             <p><strong>Username:</strong> {res.user_name}</p>
             <p><strong>Date:</strong> {res.date}</p>

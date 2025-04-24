@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from .models import Museum, Reservation
-from .serializers import UserSerializer, MuseumSerializer, ReservationSerializer
+from .models import Museum, Reservation, ClosedDate
+from .serializers import UserSerializer, MuseumSerializer, ReservationSerializer, MyTokenObtainPairSerializer,  ClosedDateSerializer
 from rest_framework import generics, parsers, viewsets, permissions
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -14,16 +14,22 @@ import qrcode
 import base64
 from io import BytesIO
 from django.core.mail import EmailMultiAlternatives
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.core.files.base import ContentFile
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import MyTokenObtainPairSerializer
-from .models import ClosedDate
-from .serializers import ClosedDateSerializer
+from django.utils import timezone
+
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+    def perform_update(self, serializer):
+        serializer.save()
 
 
 class ClosedDateViewSet(viewsets.ModelViewSet):
@@ -37,7 +43,12 @@ def send_qr_email(request):
     user = request.user
     user_email = user.email
 
-    qr_data = f"https://yourwebsite.com/ticket/{user.id}-{user.username}"
+    reservation = Reservation.objects.filter(user=user).order_by('-id').first()
+    if not reservation:
+        return Response({"error": "No reservation found for user"}, status=404)
+    
+    # qr_data = f"https://yourwebsite.com/ticket/{user.id}-{user.username}"
+    qr_data = f"RESERVATION:{reservation.id}"
     qr = qrcode.make(qr_data)
 
     buffer = BytesIO()
@@ -99,6 +110,7 @@ class GoogleLoginView(APIView):
         # login(request, user)
 
         refresh = RefreshToken.for_user(user)
+        refresh['is_staff'] = user.is_staff
 
         return Response({
             "access_token": str(refresh.access_token),
@@ -106,8 +118,6 @@ class GoogleLoginView(APIView):
             "message": "Google login successful!",
         })
 
-
-# Create your views here.
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -130,51 +140,64 @@ class MuseumViewSet(viewsets.ModelViewSet):
 class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
-    permission_classes = [IsAuthenticated]  # Μόνο authenticated χρήστες μπορούν να κάνουν κρατήσεις
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        is_admin_view = self.request.query_params.get("admin") == "true"
+
+        if user.is_staff and is_admin_view:
+            queryset = Reservation.objects.all()
+        else:
+            queryset = Reservation.objects.filter(user=user)
+
+        museum_id = self.request.query_params.get("museum")
+        date_from = self.request.query_params.get("date_from")
+        date_to = self.request.query_params.get("date_to")
+
+        if museum_id:
+            queryset = queryset.filter(museum_id=museum_id)
+        if date_from:
+            queryset = queryset.filter(date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(date__lte=date_to)
+
+        return queryset
+
+
+    def get_object(self):
+        obj = super().get_object()
+        user = self.request.user
+        if obj.user != user and not user.is_staff:
+            raise PermissionDenied("You do not have permission to view this reservation.")
+        return obj
 
     def perform_create(self, serializer):
         museum = serializer.validated_data['museum']
         date = serializer.validated_data['date']
         num_tickets = serializer.validated_data['num_tickets']
-        
+
         if museum.available_spots(date) < num_tickets:
             raise ValidationError("Not enough available spots for this date.")
-        
-        serializer.save(user=self.request.user)  # Αυτόματη συσχέτιση κράτησης με τον authenticated χρήστη
 
-    from datetime import datetime
+        serializer.save(user=self.request.user)
 
-    def get_queryset(self):
-        from datetime import datetime
-        jwt_authenticator = JWTAuthentication()
-        response = jwt_authenticator.authenticate(self.request)
+    @action(detail=True, methods=["post"], url_path="checkin")
+    def checkin(self, request, pk=None):
+        reservation = self.get_object()
 
-        if response:
-            user, _ = response
-            self.request.user = user
+        if reservation.checked_in:
+            return Response({"message": "Reservation is already checked in."}, status=status.HTTP_400_BAD_REQUEST)
 
-        queryset = Reservation.objects.all() if self.request.user.is_staff else Reservation.objects.filter(user=self.request.user)
+        reservation.checked_in = True
+        reservation.checkin_time = timezone.now()
+        reservation.save()
 
-        # Only staff users can apply filters
-        if self.request.user.is_staff:
-            museum_id = self.request.query_params.get("museum")
-            date_from = self.request.query_params.get("date_from")
-            date_to = self.request.query_params.get("date_to")
-
-            if museum_id:
-                queryset = queryset.filter(museum_id=museum_id)
-
-            if date_from:
-                queryset = queryset.filter(date__gte=date_from)
-
-            if date_to:
-                queryset = queryset.filter(date__lte=date_to)
-
-        return queryset.distinct()
-
-
-        # reservations = Reservation.objects.filter(user=self.request.user).distinct()
-        # return reservations
+        return Response({
+            "message": "Check-in successful!",
+            "checked_in": True,
+            "checkin_time": reservation.checkin_time
+        })
 
 
 class MyTokenObtainPairView(TokenObtainPairView):

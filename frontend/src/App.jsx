@@ -16,7 +16,9 @@ import AdminPage from "./pages/admin/AdminPage";
 import ManageMuseums from "./pages/admin/ManageMuseums";
 import MuseumDashboard from "./pages/admin/MuseumDashboard";
 import ManageReservations from "./pages/admin/ManageReservations";
-// import ManageUsers from "./pages/admin/ManageUsers";
+import ManageUsers from "./pages/admin/ManageUsers";
+import CheckInScanner from "./pages/admin/CheckInScanner";
+import CheckInPage from "./pages/admin/CheckInPage";
 
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -47,28 +49,38 @@ function App() {
                   <AdminRoute>
                     <AdminPage />
                   </AdminRoute>
-                } />
-                <Route path="/admin/museums" element={
-                  <AdminRoute>
-                    <ManageMuseums />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/museums/:id" element={
-                  <AdminRoute>
-                    <MuseumDashboard />
-                  </AdminRoute>
-                } />
+                    } />
+                    <Route path="/admin/museums" element={
+                      <AdminRoute>
+                        <ManageMuseums />
+                      </AdminRoute>
+                    } />
+                    <Route path="/admin/museums/:id" element={
+                      <AdminRoute>
+                        <MuseumDashboard />
+                      </AdminRoute>
+                    } />
 
-                <Route path="/admin/reservations" element={
-                  <AdminRoute>
-                    <ManageReservations />
-                  </AdminRoute>
-                } />
-                {/* <Route path="/admin/users" element={
-                  <AdminRoute>
-                    <ManageUsers />
-                  </AdminRoute>
-                } /> */}
+                    <Route path="/admin/reservations" element={
+                      <AdminRoute>
+                        <ManageReservations />
+                      </AdminRoute>
+                    } />
+                    <Route path="/admin/users" element={
+                      <AdminRoute>
+                        <ManageUsers />
+                      </AdminRoute>
+                    } />
+                    <Route path="/admin/check-in" element={
+                      <AdminRoute>
+                        <CheckInScanner />
+                      </AdminRoute>
+                    } />
+                    <Route path="/admin/check-in/:id" element={
+                        <AdminRoute>
+                          <CheckInPage />
+                        </AdminRoute>
+                    } />
               </Routes> 
         </BrowserRouter>
       </AuthProvider>

@@ -8,12 +8,17 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password", "is_staff"]
-        extra_kwards = {"password": {"write_only": True},
-                        "email": {"required": True}}
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password', 'is_staff']
+        extra_kwargs = {
+            "password": {"write_only": True, 'required': False},
+            "email": {"required": True}
+        }
 
     def create(self, validated_data):
+        password = validated_data.pop('password')
         user = User.objects.create_user(**validated_data)
+        user.set_password(password)
+        user.save()
         return user
     
 class MuseumSerializer(serializers.ModelSerializer):
@@ -32,6 +37,7 @@ class MuseumSerializer(serializers.ModelSerializer):
         return None  # If no date is provided, don't show available spots
 
 class ReservationSerializer(serializers.ModelSerializer):
+    museum_name = serializers.CharField(source="museum.name", read_only=True)
     user_name = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:

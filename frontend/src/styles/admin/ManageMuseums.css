@@ -34,7 +34,7 @@
     display: block;
     width: 100%;
     margin: 0.5rem 0;
-    padding: 0.5rem;
+    padding: 1rem;
     font-size: 1rem;
     border: 1px solid #bbb;
     border-radius: 6px;
@@ -57,20 +57,21 @@
     background-color: var(--button-color);
   }
   
-  .museum-card .delete-button, .cancel-button {
-    background-color: #e74c3c;
+  .museum-card .delete-button {
+    background-color: var(--delete-button-color);
+    margin: 0.5rem;
   }
   
-  .museum-card .delete-button, .cancel-button  {
-    background-color: #c0392b;
+  .museum-card .delete-button:hover {
+    background-color: var(--delete-button-color-hover);
   }
   
   .museum-card .cancel-button {
-    background-color: #e74c3c;
+    background-color: var(--delete-button-color);
   }
   
-  .museum-card .cancel-button  {
-    background-color: #c0392b;
+  .museum-card .cancel-button:hover {
+    background-color: var(--delete-button-color-hover);;
   }
   .manage-museum-list {
     display: flex;

@@ -138,6 +138,7 @@ const ManageReservations = () => {
             <p><strong>Reservation ID:</strong> {res.id}</p>
             <p><strong>User ID:</strong> {res.user}</p>
             <p><strong>Username:</strong> {res.user_name}</p>
+            <p><strong>Museum:</strong> {res.museum_name}</p>
             <p><strong>Date:</strong> {res.date}</p>
 
             {editingReservationId === res.id ? (

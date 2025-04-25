@@ -15,9 +15,8 @@ function Register() {
     e.preventDefault();
 
     try {
-      const payload = { username, email, password, first_name: firstName,
-        last_name: lastName,};
-      await api.post("/api/user/register/", payload);
+      const payload = { username, email, password, first_name: firstName, last_name: lastName,}; // Δημιουργία payload
+      await api.post("/api/user/register/", payload); // Αποστολή στοιχείων για εγγραφή
       navigate("/login");
     } catch (error) {
       alert("Registration failed. Please try again.");

@@ -62,3 +62,10 @@
     text-align: center;
   }
   
+  @media (max-width: 768px) {
+    .reservation-item {
+      grid-template-columns: 1fr; /* Μία στήλη σε μικρές οθόνες */
+      text-align: center;
+    }
+  }
+  

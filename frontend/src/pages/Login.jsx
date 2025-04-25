@@ -5,21 +5,21 @@ import api from "../api";
 import GoogleLoginButton from "../components/GoogleLoginButton"; 
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { setIsLoggedIn, setToken } = useAuth();  
+  const navigate = useNavigate(); 
+  const { setIsLoggedIn, setToken } = useAuth();  // Ενημέρωση της κατάστασης authentication
   const [credentials, setCredentials] = useState({ username: "", password: "" });
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-        localStorage.clear();
+        localStorage.clear(); // Καθαρίζουμε προηγούμενα tokens
 
-        const response = await api.post("/api/token/", credentials);
+        const response = await api.post("/api/token/", credentials); // Αποστολή username/password και λήψη νέων tokens
         localStorage.setItem("ACCESS_TOKEN", response.data.access); 
         localStorage.setItem("REFRESH_TOKEN", response.data.refresh);
 
-        setToken(response.data.access);
-        setIsLoggedIn(true);
+        setToken(response.data.access); // Ενημέρωση token στο context
+        setIsLoggedIn(true); // Ο χρήστης έχει συνδεθεί
 
         navigate("/");
     } catch (error) {

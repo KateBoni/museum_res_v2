@@ -133,7 +133,6 @@ body {
     background-color: var(--button-hover-color);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .main-content {
         height: auto;

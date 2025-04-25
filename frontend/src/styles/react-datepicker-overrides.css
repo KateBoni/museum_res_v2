@@ -18,8 +18,8 @@
 
   .react-datepicker__header {
     text-align: center;
-    background-color: #316ba1;
-    border-bottom: 0px solid #316ba1;
+    background-color: var(--button-color);
+    border-bottom: 0px solid var(--button-color);
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
     padding: 8px 0;

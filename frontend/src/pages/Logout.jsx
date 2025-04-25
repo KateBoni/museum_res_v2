@@ -7,13 +7,13 @@ function LogoutButton() {
     const { setIsLoggedIn, setToken } = useAuth();
 
     const handleLogout = () => {
-        localStorage.removeItem("ACCESS_TOKEN");
-        localStorage.removeItem("REFRESH_TOKEN");
-        sessionStorage.clear();
-        setIsLoggedIn(false);
-        setToken(null);
-        googleLogout();
-        window.location.href = "/login"; 
+        localStorage.removeItem("ACCESS_TOKEN"); // Διαγραφή access token
+        localStorage.removeItem("REFRESH_TOKEN"); // Διαγραφή refresh token
+        sessionStorage.clear(); // Καθαρισμός session storage
+        setIsLoggedIn(false); // Ο χρήστης έχει αποσυνδεθεί
+        setToken(null); // Καθαρισμός token
+        googleLogout(); // Αποσύνδεση Google
+        navigate("/login"); 
     };
 
     return (

@@ -4,6 +4,8 @@ from django.db.models import Sum
 # from django.utils.timezone import now
 from django.utils import timezone
 
+# ---------------------- ΜΟΥΣΕΙΑ ----------------------
+
 class Museum(models.Model):
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
@@ -28,6 +30,8 @@ class Museum(models.Model):
     def __str__(self):
         return self.name
 
+# ---------------------- ΚΡΑΤΗΣΕΙΣ ----------------------
+
 class Reservation(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -40,15 +44,16 @@ class Reservation(models.Model):
     date = models.DateField()  # Ημερομηνία κράτησης
     num_tickets = models.PositiveIntegerField()  # Αριθμός εισιτηρίων
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')  # Κατάσταση κράτησης
-    checked_in = models.BooleanField(default=False)
-    checkin_time = models.DateTimeField(null=True, blank=True)
-
+    checked_in = models.BooleanField(default=False) # Αν έχει γίνει check-in    
+    checkin_time = models.DateTimeField(null=True, blank=True) # Η ώρα που έγινε το check-in
+    
+    # Έλεγχος διαθεσιμότητας εισιτηρίων
     def save(self, *args, **kwargs):
         if self.museum.available_spots(self.date) < self.num_tickets:
             raise ValueError("Not enough available spots for this reservation.")
         super().save(*args, **kwargs)
 
-        
+    # Πραγματοποίηση check-in
     def check_in(self):
         self.checked_in = True
         self.checkin_time = timezone.now()
@@ -58,12 +63,13 @@ class Reservation(models.Model):
         return f"{self.user.username} - {self.museum.name} ({self.date})"
     
 
+# ---------------------- ΚΛΕΙΣΤΕΣ ΗΜΕΡΕΣ ----------------------
 
 class ClosedDate(models.Model):
-    museum = models.ForeignKey(Museum, on_delete=models.CASCADE, related_name="closed_dates")
-    date_from = models.DateField()
-    date_to = models.DateField()
-    reason = models.CharField(max_length=255, blank=True)
+    museum = models.ForeignKey(Museum, on_delete=models.CASCADE, related_name="closed_dates") # Το μουσείο όπου κλείνει
+    date_from = models.DateField() # Η μέρα που από την οποία ξεκινάει το κλείσιμο
+    date_to = models.DateField() # Η μέρα την οποία τελειώνει το κλείσιμο
+    reason = models.CharField(max_length=255, blank=True) # Ο λόγος για τον οποίο κλείνει
 
     def __str__(self):
         return f"{self.museum.name} closed from {self.date_from} to {self.date_to}"

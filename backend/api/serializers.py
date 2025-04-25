@@ -5,6 +5,8 @@ from django.utils import timezone
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
+# ---------------------- ΧΡΗΣΤΕΣ ----------------------
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -21,6 +23,8 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+# ---------------------- ΜΟΥΣΕΙΑ ----------------------
+    
 class MuseumSerializer(serializers.ModelSerializer):
     available_spots = serializers.SerializerMethodField()
 
@@ -36,6 +40,9 @@ class MuseumSerializer(serializers.ModelSerializer):
             return obj.available_spots(date)
         return None  # If no date is provided, don't show available spots
 
+
+# ---------------------- ΚΡΑΤΗΣΕΙΣ ----------------------
+
 class ReservationSerializer(serializers.ModelSerializer):
     museum_name = serializers.CharField(source="museum.name", read_only=True)
     user_name = serializers.CharField(source='user.username', read_only=True)
@@ -47,13 +54,14 @@ class ReservationSerializer(serializers.ModelSerializer):
             "user": {"read_only": True}  # Prevents user from being required in the request
         }
 
+    # Έλεγχος ώστε να μην γίνεται κράτηση στο παρελθόν
     def validate_date(self, value):
         current_date = timezone.now().date()
         if value < current_date:
             raise serializers.ValidationError("The reservation date cannot be in the past.")
         return value
     
-    
+    # Έλεγχος ώστε να μην γίνεται κράτηση όταν το μουσείο είναι κλειστό
     def validate(self, data):
         museum = data.get("museum")
         date = data.get("date")
@@ -63,14 +71,17 @@ class ReservationSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("The museum is closed on the selected date.")
 
         return data
-
-
+    
+# ---------------------- ΠΡΟΣΑΡΜΟΓΗ JWT TOKEN ----------------------
+# Προσθέτει το πεδίο 'is_staff' ώστε το frontend να γνωρίζει αν ο χρήστης είναι διαχειριστής
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
         token['is_staff'] = user.is_staff
         return token
+    
+# ---------------------- ΚΛΕΙΣΤΕΣ ΗΜΕΡΕΣ ----------------------
 
 class ClosedDateSerializer(serializers.ModelSerializer):
     class Meta:

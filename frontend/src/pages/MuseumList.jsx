@@ -126,15 +126,6 @@ const MuseumList = () => {
                             <div className="museum-details">
                                 <span className="museum-name">{museum.name}</span>
                             </div>
-                            <div className="reserve-button-container">
-                                {/* <button onClick={() => navigate(`/reserve/${museum.name}`, { state: { museumId: museum.id, 
-                                                                                                        museumName: museum.name,
-                                                                                                        museumPhoto: museum.photo,
-                                                                                                        museumDescription: museum.description,
-                                                                                                        museumLocation: museum.location,
-                                                                                                        museumOpeningHours: museum.opening_hours } })}>
-                                Reserve</button> */}
-                            </div>
                         </li>
                     ))}
                 </ul>

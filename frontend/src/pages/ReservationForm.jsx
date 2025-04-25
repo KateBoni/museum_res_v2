@@ -35,21 +35,9 @@ const ReservationForm = () => {
 
     useEffect(() => {
         if (date) {
-            fetchAvailableSpots();
+            fetchAvailableSpots(); 
         }
     }, [date]);
-
-    useEffect(() => {
-        const token = localStorage.getItem("ACCESS_TOKEN");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                setCurrentUser(decoded.username || decoded.email || "Unknown");
-            } catch (err) {
-                console.error("Failed to decode token:", err);
-            }
-        }
-    }, []);    
 
     useEffect(() => {
         const expandRange = (start, end) => {
@@ -62,24 +50,24 @@ const ReservationForm = () => {
             return result;
           };
           
-          const fetchClosedDates = async () => {
-            try {
-              const res = await api.get(`/api/closed-dates/?museum=${museumId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-          
-              const allDates = res.data.flatMap(cd => {
-                const from = new Date(cd.date_from);
-                const to = new Date(cd.date_to);
-                return expandRange(from, to);
-              });
-          
-              setClosedDates(allDates);
-              setClosedDateRanges(res.data); // ✅ Store full ranges with reasons
-            } catch (err) {
-              console.error("Failed to fetch closed dates", err);
-            }
-          };                
+        const fetchClosedDates = async () => {
+        try {
+            const res = await api.get(`/api/closed-dates/?museum=${museumId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            });
+        
+            const allDates = res.data.flatMap(cd => {
+            const from = new Date(cd.date_from);
+            const to = new Date(cd.date_to);
+            return expandRange(from, to);
+            });
+        
+            setClosedDates(allDates);
+            setClosedDateRanges(res.data); 
+        } catch (err) {
+            console.error("Failed to fetch closed dates", err);
+        }
+        };                
     
         if (museumId) {
             fetchClosedDates();
@@ -137,9 +125,7 @@ const ReservationForm = () => {
                     "Content-Type": "application/json",
                 },
             });
-    
-            console.log("Reservation created:", response.data);
-    
+
             const qrResponse = await api.get("/send-qr-email/", {
                 headers: {
                     Authorization: `Bearer ${latestToken}`,
@@ -152,7 +138,6 @@ const ReservationForm = () => {
 
     
             alert("Reservation successful! A QR code has been sent to your email.");
-            // navigate("/");
         } catch (error) {
             console.error("Error creating reservation:", error);
             setError(error.response?.data?.message || "Failed to create reservation.");

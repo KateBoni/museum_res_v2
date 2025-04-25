@@ -69,7 +69,7 @@ const MuseumDashboard = () => {
         },
       });
       alert("Museum updated successfully");
-      fetchMuseum(); // Refresh
+      fetchMuseum(); 
     } catch (err) {
       console.error("Failed to update museum", err.response?.data || err);
     }
@@ -93,12 +93,14 @@ const MuseumDashboard = () => {
     }
   };
 
-  const deleteClosedDate = async (closedDateId) => {
+  const deleteClosedDate = async (id) => {
     const confirmed = window.confirm("Delete this closed date?");
     if (!confirmed) return;
-
+  
+    console.log("🗑️ Deleting closed date:", id); 
+  
     try {
-      await api.delete(`/api/closed-dates/${closedDateId}/`, {
+      await api.delete(`/api/closed-dates/${id}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchClosedDates();
@@ -106,6 +108,7 @@ const MuseumDashboard = () => {
       console.error("Failed to delete closed date", err);
     }
   };
+  
 
   if (!museum) return <div>Loading museum...</div>;
 
@@ -188,21 +191,21 @@ const MuseumDashboard = () => {
         <label>From:</label>
           <input
             type="date"
-            value={newClosedDate.dateFrom}
+            value={newClosedDate.dateFrom || ""}
             onChange={(e) => setNewClosedDate({ ...newClosedDate, dateFrom: e.target.value })}
           />
 
           <label>To:</label>
           <input
             type="date"
-            value={newClosedDate.dateTo}
+            value={newClosedDate.dateTo || ""}
             onChange={(e) => setNewClosedDate({ ...newClosedDate, dateTo: e.target.value })}
           />
 
         <input
           type="text"
           placeholder="Reason (optional)"
-          value={newClosedDate.reason}
+          value={newClosedDate.reason || ""}
           onChange={(e) => setNewClosedDate({ ...newClosedDate, reason: e.target.value })}
         />
         <button onClick={addClosedDate}>Add Closed Date</button>

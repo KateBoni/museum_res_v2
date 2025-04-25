@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QrReader } from "react-qr-reader";
-// import "../../styles/admin/CheckInScanner.css";
+import "../../styles/admin/CheckInScanner.css";
 
 const CheckInScanner = () => {
   const navigate = useNavigate();

@@ -23,7 +23,6 @@ const Reservations = () => {
 
   const fetchReservations = async (token) => {
     try {
-      console.log("🔎 Fetching reservations with token:", token);
       const response = await api.get("api/reservations/", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -60,9 +59,15 @@ const Reservations = () => {
           {reservations.map((reservation) => (
             <li key={reservation.id} className={`reservation-item ${reservation.is_expired ? 'expired' : ''}`}>
               <strong>🏛️ {getMuseumName(reservation.museum)}</strong>
-              <p>🎟️ Tickets: {reservation.num_tickets}</p>
-              <p>📅 Reservation Date: {reservation.date}</p>
-                <div className="qr-wrapper">
+              {reservation.status === "cancelled" ? (
+                <p style={{ color: "red", fontWeight: "bold" }}>
+                  Your Reservations is Cancelled
+                </p>
+              ) : (
+              <>
+              <p>Number of Tickets: {reservation.num_tickets}</p>
+              <p>Reservation Date: {reservation.date}</p>
+              <div className="qr-wrapper">
                 <QRCode
                   value={`http://localhost:5173/admin/check-in/${reservation.id}`}
                   size={128}
@@ -71,6 +76,9 @@ const Reservations = () => {
                     Show this code at museum check-in
                   </p>
                 </div>
+              </>
+              )}
+                
 
             </li>
           ))}

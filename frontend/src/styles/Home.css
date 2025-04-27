@@ -146,7 +146,6 @@ body {
     background-color: var(--button-hover-color);
 }
 
-/* Responsive ρυθμίσεις */
 @media (max-width: 768px) {
     .hero-section {
         height: 60vh;
